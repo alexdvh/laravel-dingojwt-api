@@ -1,9 +1,6 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: Hoang Dru
- * Date: 3/24/2016
- * Time: 10:55 PM
+ * @author: Hoangdv
  */
 
 namespace App\Modules;

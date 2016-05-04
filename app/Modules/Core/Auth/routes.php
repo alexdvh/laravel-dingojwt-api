@@ -22,3 +22,10 @@ $api->version('v1', function ($api) {
     		'middleware' => ['acl:user.list'],
     	]);
 });
+
+
+/* Routes admin */
+Route::group(array('middleware' => 'web', 'prefix' => 'admin', 'module' => 'Auth', 'namespace' => 'App\Modules\Core\Auth\Controllers\Admin'), function () {
+	Route::any('/login', 'AuthController@login');
+	Route::any('/logout', 'AuthController@logout');
+});
