@@ -41,11 +41,9 @@ class AuthController extends Controller
         }
         
         // update token
-        $user = \Auth::User();
+        $user = JWTAuth::toUser($token);
         $user->token = $token;
         unset($user->id);
-        unset($user->password);
-        unset($user->remember_token);
         unset($user->created_at);
         unset($user->updated_at);
         unset($user->deleted_at);
@@ -64,7 +62,6 @@ class AuthController extends Controller
         $params = \Input::only('username', 'email', 'password');
 
         User::unguard();
-
         $newUser = [
             'username' => $params['username'],
             'email' => $params['email'],
@@ -73,28 +70,25 @@ class AuthController extends Controller
         $user = User::create($newUser);
         $token = JWTAuth::fromUser($user);
         $user->token = $token;
-
+        unset($user->id);
+        unset($user->created_at);
+        unset($user->updated_at);
+        unset($user->deleted_at);
         User::reguard();
 
-        return \Response::json(compact('user'));
+        // all good so return the token
+        return $this->response->array([
+                "success" => true,
+                "message" => "Login",
+                "errors" =>  "Login successfully.",
+                "code" => 00,
+                "status_code" => 200,
+                "data" => $user
+            ]);
     }
 
     public function test() {
         
         return \Response::json(User::all());
-    }
-
-    protected function updateToken($token = null) {
-        if ($token) {
-            $user = JWTAuth::parseToken()->authenticate();
-            $user->remember_token = $token;
-            $user->save();
-            unset($user->created_at);
-            unset($user->updated_at);
-            unset($user->deleted_at);
-            return $user;
-        }
-
-        return null;
     }
 }
