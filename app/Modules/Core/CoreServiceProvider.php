@@ -2,6 +2,7 @@
 namespace App\Modules\Core;
 
 use App\Modules\Core\User\Helper\UserHelper;
+use App\Modules\Core\Auth\Helper\AuthHelper;
 
 /**
  * ServiceProvider
@@ -43,6 +44,10 @@ class CoreServiceProvider extends \Illuminate\Support\ServiceProvider
     public function register() {
     	$this->app->singleton('UserHelper', function ($app) {
                 return new UserHelper();
+            });
+
+        $this->app->singleton('AuthHelper', function ($app) {
+                return new AuthHelper();
             });
     }
 

@@ -215,7 +215,8 @@ return [
         'JWTFactory' => TymonJWTAuthFacadesJWTFactory::class,
 	
     	// config Helper
-    	'UserHelper' => App\Modules\Core\User\Helper\Facade\UserHelper::class,
+        'UserHelper' => App\Modules\Core\User\Helper\Facade\UserHelper::class,
+    	'AuthHelper' => App\Modules\Core\Auth\Helper\Facade\AuthHelper::class,
     ],
 
 ];

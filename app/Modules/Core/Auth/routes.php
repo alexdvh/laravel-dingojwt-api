@@ -13,19 +13,52 @@
 
 $api = app('Dingo\Api\Routing\Router');
 $api->version('v1', function ($api) {
-    $api->post('auth/login', 'App\Modules\Core\Auth\Controllers\Api\AuthController@authenticate');
-    $api->post('auth/register', 'App\Modules\Core\Auth\Controllers\Api\AuthController@register');
 
-    $api->get('auth/test', [
-    		'uses' => 'App\Modules\Core\Auth\Controllers\Api\AuthController@test',
-    		'as' => 'user.list',
-    		'middleware' => ['acl:user.list'],
-    	]);
+    $api->group([
+            'prefix' => 'auth',
+            'namespace' => 'App\Modules\Core\Auth\Controllers\Api',
+        ], function ($api) {
+
+            $api->post('login', [
+                    'uses' => 'AuthController@authenticate',
+                    'as' => 'api.auth.login',
+                ]);
+
+            $api->post('register', [
+                'uses' => 'AuthController@register',
+                'as' => 'api.auth.register',
+                ]);
+
+            $api->get('logout', [
+                'uses' => 'AuthController@logout',
+                'as' => 'api.auth.logout',
+                'middleware' => ['jwt.auth'],
+            ]);
+        }
+    );
 });
 
 
 /* Routes admin */
-Route::group(array('middleware' => 'web', 'prefix' => 'admin', 'module' => 'Auth', 'namespace' => 'App\Modules\Core\Auth\Controllers\Admin'), function () {
-	Route::any('/login', 'AuthController@login');
-	Route::any('/logout', 'AuthController@logout');
+Route::group([
+    'middleware' => 'web', 
+    'prefix' => 'admin', 
+    'module' => 'Auth', 
+    'namespace' => 'App\Modules\Core\Auth\Controllers\Admin',
+], function () {
+
+    Route::any('/login', [
+        'uses' => 'AuthController@login',
+        'as' => 'admin.auth.login',
+    ]);
+
+    Route::any('/register', [
+        'uses' => 'AuthController@register',
+        'as' => 'admin.auth.register',
+    ]);
+
+    Route::get('/logout', [
+        'uses' => 'AuthController@logout',
+        'as' => 'admin.auth.logout',
+    ]);
 });

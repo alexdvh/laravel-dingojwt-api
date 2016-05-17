@@ -33,10 +33,12 @@
   <div class="login-box-body">
     <p class="login-box-msg">Sign in to start your session</p>
 
-    <?php if ($error) { ?>
+    <?php if ($errors) { ?>
       <div class="callout callout-danger">
           <h4>Login error: </h4>
-          <p>{{ $error['message'] }}</p>
+          @foreach($errors as #err)
+          <p>{!! $err !!}</p>
+          @endforeach
       </div>
     <?php } ?>
                 
