@@ -20,7 +20,7 @@ $api->version('v1', function ($api) {
         ], function ($api) {
 
             $api->post('login', [
-                    'uses' => 'AuthController@authenticate',
+                    'uses' => 'AuthController@login',
                     'as' => 'api.auth.login',
                 ]);
 

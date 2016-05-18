@@ -41,7 +41,7 @@ class AuthHelper extends Abstractor {
         $rules = [
         	'username' => 'required|unique:users|max:255',
             'email' => 'required|email|unique:users|max:255',
-            'password' => 'required|min:8|alpha_dash'
+            'password' => 'required|min:8|alpha_dash|confirmed'
         ];
 
         return Validator::make($credentials, $rules);
