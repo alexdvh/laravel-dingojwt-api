@@ -25,7 +25,11 @@ class AuthController extends BackendController {
 
     /**
      * Login page
-     * @method any
+     * if $response['success'] = true then set session
+     * else response errors on view
+     *
+     * @POST email/password
+     * @GET 
      *
      * @return view
      */
@@ -36,39 +40,39 @@ class AuthController extends BackendController {
         if(\Request::isMethod('post')){
             //LoginRequest $request
             $params = \Input::all();
-
-            // $validator = AuthHelper::validatorLogin($params);
-        
-            // if (!$validator->fails()) {
                 
             $post = [
                 'email' => $params['email'],
                 'password' => $params['password'],
             ];
             
-                try {
-                    $res = $this->api->post('api/auth/login', $post);
-                    
-                    $arr = [
-                        'username' => $res['data']->username,
-                        'email' => $res['data']->email,
-                        'token' => $res['data']->token
+            try {
+                $response = $this->api->post('api/auth/login', $post);
+                
+                // response sucess = true
+                if (true == $response['success']) {
+                    $user = [
+                        'username' => $response['data']->username,
+                        'email' => $response['data']->email,
+                        'token' => $response['data']->token
                     ];
-                    foreach ($arr as $key => $value) {
+                    foreach ($user as $key => $value) {
                         \Request::session()->put($key, $value);
                     }
                     return redirect('/admin');
-                } catch (\Dingo\Api\Exception\InternalHttpException $e) {
-                    $response = $e->getResponse();
-                    $data['errors'] = $response->original;
-                    $data['email'] = $post['email'];
-                    $data['password'] = $post['password'];
                 }
-            //}
-            $data['errors'] = $validator->errors();
-            // var_dump($data['errors']);die;
-            // $data['email'] = $post['email'];
-            // $data['password'] = $post['password'];
+
+                // default return errors
+                $data['errors'] = $response['errors'];
+                $data['email'] = $post['email'];
+                $data['password'] = $post['password'];
+                
+            } catch (\Dingo\Api\Exception\InternalHttpException $e) {
+                $response = $e->getResponse();
+                $data['errors'] = $response->original;
+                $data['email'] = $post['email'];
+                $data['password'] = $post['password'];
+            }
         }
 
         return view('Auth::'. $this->theme . '.layouts.login', $data);
@@ -76,13 +80,19 @@ class AuthController extends BackendController {
 
     /**
      * Register page
+     * if $response['success'] = true then set session
+     * else response errors on view
+     *
+     * @POST username/email/password/password_confirmation
+     * @GET 
+     *
      * @method any
      *
      * @return view
      */
     public function register()
     {
-        $data = ['error' => null, 'email' => '', 'password' => ''];
+        $data = ['errors' => null, 'email' => '', 'password' => ''];
 
         if(\Request::isMethod('post')){
             $params = \Input::all();
@@ -95,20 +105,30 @@ class AuthController extends BackendController {
             ];
             
             try {
-                $res = $this->api->post('api/auth/register', $post);
+                $response = $this->api->post('api/auth/register', $post);
                 
-                $arr = [
-                    'username' => $res['data']->username,
-                    'email' => $res['data']->email,
-                    'token' => $res['data']->token
-                ];
-                foreach ($arr as $key => $value) {
-                    \Request::session()->put($key, $value);
+                // $response sucess = true
+                if (true == $response['success']) {
+                    $user = [
+                        'username' => $response['data']->username,
+                        'email' => $response['data']->email,
+                        'token' => $response['data']->token
+                    ];
+
+                    foreach ($arr as $key => $value) {
+                        \Request::session()->put($key, $value);
+                    }
+                    return redirect('/admin');
                 }
-                return redirect('/admin');
+
+                // $response sucess = false
+                $data['errors'] = $response['errors'];
+                $data['email'] = $post['email'];
+                $data['password'] = $post['password'];
+
             } catch (\Dingo\Api\Exception\InternalHttpException $e) {
                 $response = $e->getResponse();
-                $data['error'] = $response->original;
+                $data['errors'] = $response->original;
                 $data['email'] = $post['email'];
                 $data['password'] = $post['password'];
             }

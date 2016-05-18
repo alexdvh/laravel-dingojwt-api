@@ -31,6 +31,7 @@ class AuthController extends Controller
     
     /**
      * Authenticate the User
+     * @method POST
      * @param email $email, string $password
      * @return JSON Response
      */
@@ -45,7 +46,7 @@ class AuthController extends Controller
             return $this->response->array([
                 "success" => false,
                 "message" => "Login failure",
-                "errors" =>  $validator->errors(),
+                "errors" =>  $validator->errors()->all(),
                 "code" => 422,
                 "status_code" => 422,
             ]);
@@ -54,11 +55,23 @@ class AuthController extends Controller
         try {
             // attempt to verify the credentials and create a token for the user
             if (!$token = JWTAuth::attempt($credentials)) {
-                return \Response::json(['error' => 'invalid_credentials'], 401);
+                return $this->response->array([
+                    "success" => false,
+                    "message" => "Login failure",
+                    "errors" =>  'invalid credentials',
+                    "code" => 401,
+                    "status_code" => 401,
+                ]);
             }
         } catch (JWTException $e) {
             // something went wrong whilst attempting to encode the token
-            return \Response::json(['error' => 'could_not_create_token'], 500);
+            return $this->response->array([
+                    "success" => false,
+                    "message" => "Login failure",
+                    "errors" =>  'could not create token',
+                    "code" => 500,
+                    "status_code" => 500,
+                ]);
         }
         
         // update token
@@ -73,7 +86,7 @@ class AuthController extends Controller
                 "success" => true,
                 "message" => "Login",
                 "errors" =>  "Login successfully.",
-                "code" => 00,
+                "code" => 200,
                 "status_code" => 200,
                 "data" => $user
             ]);
@@ -81,6 +94,7 @@ class AuthController extends Controller
 
     /**
      * Register the User
+     * @method POST
      * @param string $username, email $email, string $password
      * @return JSON Response
      */
@@ -126,13 +140,24 @@ class AuthController extends Controller
         try {
 
             if (!$res = JWTAuth::parseToken()->invalidate()) {
-                return \Response::json(['error' => 'could_not_invalid_token'], 401);
+                return $this->response->array([
+                    "success" => false,
+                    "message" => "Logout",
+                    "errors" =>  "could not invalid token.",
+                    "code" => 401,
+                    "status_code" => 401
+                ]);
             }
 
         } catch (Tymon\JWTAuth\Exceptions\JWTException $e) {
-
-            return response()->json(['token_absent'], $e->getStatusCode());
-        
+            
+            return $this->response->array([
+                "success" => false,
+                "message" => "Logout",
+                "errors" =>  "token absent",
+                "code" => $e->getStatusCode(),
+                "status_code" => $e->getStatusCode()
+            ]);
         }
         
         if (\Session::has('token')) {

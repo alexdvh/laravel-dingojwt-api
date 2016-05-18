@@ -37,7 +37,7 @@
             <div class="callout callout-danger">
                     <h4>Login error </h4>
                     <ul>
-                    @foreach($errors->all() as $err)
+                    @foreach($errors as $err)
                         <li>{{ $err }}</li>
                     @endforeach
                     </ul>
@@ -48,18 +48,18 @@
             <input type="hidden" name="_token" value="{{ csrf_token() }}">
             <div class="form-group has-feedback">
                 <input type="email"
-                name="email"
-                value="{{ $email }}" 
-                class="form-control" 
-                placeholder="Email">
+                    name="email"
+                    value="{{ $email }}" 
+                    class="form-control" 
+                    placeholder="Email">
                 <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
             </div>
             <div class="form-group has-feedback">
                 <input type="password"
-                name="password"
-                value="{{ $password }}"
-                class="form-control" 
-                placeholder="Password">
+                    name="password"
+                    value="{{ $password }}"
+                    class="form-control" 
+                    placeholder="Password">
                 <span class="glyphicon glyphicon-lock form-control-feedback"></span>
             </div>
             <div class="row">
